@@ -1,33 +1,6 @@
 package net.projectmythos.argos.framework.commands.models;
 
 import com.google.common.base.Strings;
-import gg.projecteden.api.common.utils.Nullables;
-import gg.projecteden.api.common.utils.TimeUtils.Timespan;
-import gg.projecteden.api.common.utils.UUIDUtils;
-import gg.projecteden.api.mongodb.interfaces.PlayerOwnedObject;
-import gg.projecteden.nexus.features.commands.staff.MultiCommandCommand;
-import gg.projecteden.nexus.features.customblocks.models.CustomBlock;
-import gg.projecteden.nexus.features.minigames.models.Minigamer;
-import gg.projecteden.nexus.features.resourcepack.decoration.DecorationType;
-import gg.projecteden.nexus.features.resourcepack.decoration.common.DecorationConfig;
-import gg.projecteden.nexus.features.resourcepack.models.CustomMaterial;
-import gg.projecteden.nexus.framework.commands.models.annotations.*;
-import gg.projecteden.nexus.framework.commands.models.events.CommandEvent;
-import gg.projecteden.nexus.framework.commands.models.events.CommandRunEvent;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.InvalidInputException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.PlayerNotFoundException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.PlayerNotOnlineException;
-import gg.projecteden.nexus.framework.exceptions.preconfigured.*;
-import gg.projecteden.nexus.framework.persistence.mongodb.MongoPlayerService;
-import gg.projecteden.nexus.models.nerd.Nerd;
-import gg.projecteden.nexus.models.nerd.NerdService;
-import gg.projecteden.nexus.models.nerd.Rank;
-import gg.projecteden.nexus.models.nickname.Nickname;
-import gg.projecteden.nexus.utils.*;
-import gg.projecteden.nexus.utils.PlayerUtils.OnlinePlayers;
-import gg.projecteden.nexus.utils.SerializationUtils.Json;
-import gg.projecteden.nexus.utils.worldgroup.SubWorldGroup;
-import gg.projecteden.nexus.utils.worldgroup.WorldGroup;
 import gg.projecteden.parchment.HasLocation;
 import gg.projecteden.parchment.OptionalLocation;
 import lombok.*;
@@ -36,6 +9,17 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.projectmythos.argos.framework.commands.models.events.CommandEvent;
+import net.projectmythos.argos.framework.commands.models.events.CommandRunEvent;
+import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotFoundException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeCommandBlockException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeConsoleException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeIngameException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.NoPermissionException;
+import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
+import net.projectmythos.argos.utils.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -64,14 +48,8 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static gg.projecteden.api.common.utils.TimeUtils.parseDate;
-import static gg.projecteden.api.common.utils.TimeUtils.parseDateTime;
-import static gg.projecteden.nexus.utils.Distance.distance;
-import static gg.projecteden.nexus.utils.Nullables.isNullOrAir;
-import static gg.projecteden.nexus.utils.Nullables.isNullOrEmpty;
-import static gg.projecteden.nexus.utils.StringUtils.an;
-import static gg.projecteden.nexus.utils.StringUtils.trimFirst;
 import static java.util.stream.Collectors.toList;
+import static net.projectmythos.argos.utils.Nullables.isNullOrAir;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -381,25 +359,6 @@ public abstract class CustomCommand extends ICustomCommand {
 
 	public void permissionError() {
 		throw new NoPermissionException();
-	}
-
-	/**
-	 * Throws a {@link BlockedInMinigamesException} if the user is {@link Minigamer#isPlaying() playing a minigame}.
-	 * @throws BlockedInMinigamesException user is inside a minigame world
-	 * @throws PlayerNotOnlineException the user is not on the server
-	 */
-	public void blockInMinigames() throws PlayerNotOnlineException, BlockedInMinigamesException {
-		if (Minigamer.of(uuid()).isPlaying())
-			throw new BlockedInMinigamesException(false);
-	}
-
-	/**
-	 * Throws a {@link BlockedInMinigamesException} if the user is inside of a {@link WorldGroup#MINIGAMES minigame world}.
-	 * @throws BlockedInMinigamesException user is inside a minigame world
-	 */
-	public void blockInMinigameWorld() throws BlockedInMinigamesException {
-		if (worldGroup() == WorldGroup.MINIGAMES)
-			throw new BlockedInMinigamesException(true);
 	}
 
 	public boolean hasPermission(String permission) {

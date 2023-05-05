@@ -1,14 +1,14 @@
 package net.projectmythos.argos.framework.commands.models.events;
 
-import gg.projecteden.nexus.framework.commands.models.CustomCommand;
-import gg.projecteden.nexus.framework.exceptions.NexusException;
-import gg.projecteden.nexus.framework.exceptions.preconfigured.MustBeIngameException;
-import gg.projecteden.nexus.utils.JsonBuilder;
-import gg.projecteden.nexus.utils.PlayerUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import net.kyori.adventure.text.ComponentLike;
+import net.projectmythos.argos.framework.commands.models.CustomCommand;
+import net.projectmythos.argos.framework.exceptions.ArgosException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeIngameException;
+import net.projectmythos.argos.utils.JsonBuilder;
+import net.projectmythos.argos.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -54,7 +54,7 @@ public abstract class CommandEvent extends Event implements Cancellable {
 		PlayerUtils.send(sender, component);
 	}
 
-	public Player getPlayer() throws NexusException {
+	public Player getPlayer() throws ArgosException {
 		if (!(sender instanceof Player player))
 			throw new MustBeIngameException();
 
@@ -62,7 +62,7 @@ public abstract class CommandEvent extends Event implements Cancellable {
 	}
 
 	public String getAliasUsed() {
-		return aliasUsed.replace("nexus:", "");
+		return aliasUsed.replace("argos:", "");
 	}
 
 	public String getOriginalMessage() {

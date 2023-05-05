@@ -1,7 +1,7 @@
 package net.projectmythos.argos.framework.commands.models.events;
 
-import gg.projecteden.nexus.framework.commands.models.CustomCommand;
-import gg.projecteden.nexus.framework.exceptions.preconfigured.NoPermissionException;
+import net.projectmythos.argos.framework.commands.models.CustomCommand;
+import net.projectmythos.argos.framework.exceptions.preconfigured.NoPermissionException;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
