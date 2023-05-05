@@ -8,9 +8,11 @@ import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.ComponentLike;
 import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
 import net.projectmythos.argos.utils.AdventureUtils;
 import net.projectmythos.argos.utils.JsonBuilder;
 import net.projectmythos.argos.utils.Nullables;
+import net.projectmythos.argos.utils.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -19,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
+
+import static net.projectmythos.argos.utils.UUIDUtils.isUUID0;
 
 /**
  * A mongo database object owned by a player
@@ -160,17 +164,19 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 			sendMessage(json(message));
 	}
 
-	default void sendOrMail(String message) {
-		if (isUUID0(getUuid())) {
-			Argos.log(message);
-			return;
-		}
+	//TODO: Uncomment if doing mail
 
-		if (isOnline())
-			sendMessage(json(message));
-		else
-			Mail.fromServer(getUuid(), WorldGroup.SURVIVAL, message).send();
-	}
+//	default void sendOrMail(String message) {
+//		if (isUUID0(getUuid())) {
+//			Argos.log(message);
+//			return;
+//		}
+//
+//		if (isOnline())
+//			sendMessage(json(message));
+//		else
+//			Mail.fromServer(getUuid(), WorldGroup.SURVIVAL, message).send();
+//	}
 
 	default void sendMessage(UUID sender, ComponentLike component, MessageType type) {
 		if (isUUID0(getUuid()))
