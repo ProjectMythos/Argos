@@ -9,12 +9,21 @@ repositories {
     maven { url = uri("https://sonatype.projecteden.gg/repository/maven-public/") }
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+    maven { url = uri("https://repo.md-5.net/content/groups/public/") }
+    maven { url = uri("https://maven.enginehub.org/repo/") }
+    maven { url = uri("https://maven.citizensnpcs.co/repo") }
 }
 
 dependencies {
     paperweightDevBundle("gg.projecteden.parchment", "1.19.4-R0.1-SNAPSHOT")
     compileOnly("gg.projecteden.parchment:parchment-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldguard:worldguard-core:7.0.6-SNAPSHOT")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.6-SNAPSHOT")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.31-SNAPSHOT") {
+        exclude("*", "*")
+    }
     implementation("io.papermc:paperlib:1.0.8-SNAPSHOT")
+    implementation("dev.morphia.morphia:core:1.6.2-SNAPSHOT")
 }
 
 group = "net"
