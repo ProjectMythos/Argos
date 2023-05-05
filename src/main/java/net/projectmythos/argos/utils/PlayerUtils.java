@@ -1,6 +1,8 @@
 package net.projectmythos.argos.utils;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTItem;
 import gg.projecteden.api.interfaces.HasUniqueId;
 import gg.projecteden.parchment.HasOfflinePlayer;
 import gg.projecteden.parchment.HasPlayer;
@@ -16,6 +18,7 @@ import net.projectmythos.argos.Argos;
 import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
 import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotFoundException;
 import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
+import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
@@ -42,6 +45,7 @@ import static java.util.stream.Collectors.toList;
 import static net.projectmythos.argos.utils.Nullables.isNullOrAir;
 import static net.projectmythos.argos.utils.Nullables.isNullOrEmpty;
 import static net.projectmythos.argos.utils.StringUtils.stripColor;
+import static net.projectmythos.argos.utils.UUIDUtils.isUuid;
 import static net.projectmythos.argos.utils.Utils.getMin;
 
 public class PlayerUtils {
@@ -191,9 +195,7 @@ public class PlayerUtils {
     }
 
     public enum Dev implements PlayerOwnedObject {
-        WAKKA("e9e07315-d32c-4df7-bd05-acfe51108234"),
         CYN("1d70383f-21ba-4b8b-a0b4-6c327fbdade1"),
-        MEDUSA("997605b3-6318-4886-948f-aea29d3631d9"), // Not_Cyn mc account
         ;
 
         @Getter
@@ -567,6 +569,52 @@ public class PlayerUtils {
         }};
     }
 
+    public static void dropExcessItems(HasPlayer player, List<ItemStack> excess) {
+        dropItems(player.getPlayer().getLocation(), excess);
+    }
+
+    public static void dropItems(Location location, List<ItemStack> items) {
+        if (!isNullOrEmpty(items))
+            for (ItemStack item : items)
+                if (!isNullOrAir(item) && item.getAmount() > 0)
+                    location.getWorld().dropItemNaturally(location, item);
+    }
+
+    /**
+     * Gets {@link Player}s from a list of {@link HasPlayer}
+     * @param hasPlayers list of player containers
+     * @return list of players
+     */
+    public static @NonNull List<Player> getPlayers(List<? extends @NonNull HasPlayer> hasPlayers) {
+        return hasPlayers.stream().map(HasPlayer::getPlayer).collect(toList());
+    }
+
+    /**
+     * Gets {@link Player}s from a list of {@link OptionalPlayer} if they are non null
+     * @param hasPlayers list of optional players
+     * @return list of non-null players
+     */
+    public static @NonNull List<@NonNull Player> getNonNullPlayers(Collection<? extends @NonNull OptionalPlayer> hasPlayers) {
+        return hasPlayers.stream().map(OptionalPlayer::getPlayer).filter(Objects::nonNull).collect(toList());
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ArmorSlot {
+        HELMET(EquipmentSlot.HEAD),
+        CHESTPLATE(EquipmentSlot.CHEST),
+        LEGGINGS(EquipmentSlot.LEGS),
+        BOOTS(EquipmentSlot.FEET),
+        ;
+
+        private final EquipmentSlot slot;
+
+        public Material getLeather() {
+            return Material.getMaterial("LEATHER_" + name());
+        }
+
+    }
+
     public static List<ItemStack> fixMaxStackSize(List<ItemStack> items) {
         List<ItemStack> fixed = new ArrayList<>();
         for (ItemStack item : items) {
@@ -687,5 +735,7 @@ public class PlayerUtils {
     public static boolean isSelf(@Nullable UUID uuid1, @Nullable UUID uuid2) {
         return uuid1 != null && uuid1.equals(uuid2);
     }
+
+
 
 }
