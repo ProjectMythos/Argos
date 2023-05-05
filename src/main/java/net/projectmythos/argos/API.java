@@ -2,6 +2,7 @@ package net.projectmythos.argos;
 
 import com.google.gson.GsonBuilder;
 import dev.morphia.converters.TypeConverter;
+import net.projectmythos.argos.framework.persistence.mongodb.DatabaseConfig;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoConnector;
 import net.projectmythos.argos.utils.Env;
 import org.bukkit.Location;
