@@ -1,12 +1,12 @@
 package net.projectmythos.argos.framework.commands;
 
-import gg.projecteden.nexus.framework.commands.models.CustomCommand;
-import gg.projecteden.nexus.framework.commands.models.annotations.Description;
-import gg.projecteden.nexus.framework.commands.models.annotations.DoubleSlash;
-import gg.projecteden.nexus.framework.commands.models.annotations.Permission;
-import gg.projecteden.nexus.framework.commands.models.annotations.Redirects.Redirect;
-import gg.projecteden.nexus.utils.Utils;
 import lombok.Getter;
+import net.projectmythos.argos.framework.commands.models.CustomCommand;
+import net.projectmythos.argos.framework.commands.models.annotations.Description;
+import net.projectmythos.argos.framework.commands.models.annotations.DoubleSlash;
+import net.projectmythos.argos.framework.commands.models.annotations.Permission;
+import net.projectmythos.argos.framework.commands.models.annotations.Redirects.Redirect;
+import net.projectmythos.argos.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;

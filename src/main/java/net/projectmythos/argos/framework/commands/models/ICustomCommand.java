@@ -1,26 +1,23 @@
 package net.projectmythos.argos.framework.commands.models;
 
-import gg.projecteden.api.common.annotations.Async;
-import gg.projecteden.api.common.annotations.Disabled;
-import gg.projecteden.api.common.annotations.Environments;
-import gg.projecteden.api.mongodb.interfaces.PlayerOwnedObject;
-import gg.projecteden.nexus.Nexus;
-import gg.projecteden.nexus.features.menus.MenuUtils.ConfirmationMenu;
-import gg.projecteden.nexus.framework.commands.Commands;
-import gg.projecteden.nexus.framework.commands.models.annotations.*;
-import gg.projecteden.nexus.framework.commands.models.events.CommandEvent;
-import gg.projecteden.nexus.framework.commands.models.events.CommandRunEvent;
-import gg.projecteden.nexus.framework.commands.models.events.CommandTabEvent;
-import gg.projecteden.nexus.framework.exceptions.NexusException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.CommandCooldownException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.InvalidInputException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.PlayerNotFoundException;
-import gg.projecteden.nexus.framework.exceptions.postconfigured.PlayerNotOnlineException;
-import gg.projecteden.nexus.framework.exceptions.preconfigured.MissingArgumentException;
-import gg.projecteden.nexus.framework.exceptions.preconfigured.NoPermissionException;
-import gg.projecteden.nexus.models.cooldown.CooldownService;
-import gg.projecteden.nexus.utils.*;
 import lombok.SneakyThrows;
+import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.framework.commands.Commands;
+import net.projectmythos.argos.framework.commands.models.annotations.*;
+import net.projectmythos.argos.framework.commands.models.events.CommandEvent;
+import net.projectmythos.argos.framework.commands.models.events.CommandRunEvent;
+import net.projectmythos.argos.framework.commands.models.events.CommandTabEvent;
+import net.projectmythos.argos.framework.exceptions.ArgosException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.CommandCooldownException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotFoundException;
+import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.MissingArgumentException;
+import net.projectmythos.argos.framework.exceptions.preconfigured.NoPermissionException;
+import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
+import net.projectmythos.argos.models.cooldown.CooldownService;
+import net.projectmythos.argos.features.menus.MenuUtils.ConfirmationMenu;
+import net.projectmythos.argos.utils.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,14 +34,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static gg.projecteden.api.common.utils.ReflectionUtils.methodsAnnotatedWith;
-import static gg.projecteden.api.common.utils.UUIDUtils.UUID0;
-import static gg.projecteden.nexus.framework.commands.models.CustomCommand.getSwitchPattern;
-import static gg.projecteden.nexus.framework.commands.models.PathParser.getLiteralWords;
-import static gg.projecteden.nexus.framework.commands.models.PathParser.getPathString;
-import static gg.projecteden.nexus.utils.Nullables.isNullOrEmpty;
-import static gg.projecteden.nexus.utils.StringUtils.*;
-import static gg.projecteden.nexus.utils.Utils.*;
+import static net.projectmythos.argos.framework.commands.models.CustomCommand.getSwitchPattern;
+import static net.projectmythos.argos.framework.commands.models.PathParser.getLiteralWords;
+import static net.projectmythos.argos.framework.commands.models.PathParser.getPathString;
+import static net.projectmythos.argos.utils.Nullables.isNullOrEmpty;
+import static net.projectmythos.argos.utils.ReflectionUtils.methodsAnnotatedWith;
+import static net.projectmythos.argos.utils.StringUtils.*;
+import static net.projectmythos.argos.utils.UUIDUtils.UUID0;
+import static net.projectmythos.argos.utils.Utils.*;
 
 @SuppressWarnings("unused")
 public abstract class ICustomCommand {
@@ -86,7 +83,7 @@ public abstract class ICustomCommand {
 			if (annotation instanceof Aliases) {
 				for (String alias : ((Aliases) annotation).value()) {
 					if (!Pattern.compile("[a-zA-Z\\d_-]+").matcher(alias).matches()) {
-						Nexus.warn("Alias invalid: " + getName() + "Command.java / " + alias);
+						Argos.warn("Alias invalid: " + getName() + "Command.java / " + alias);
 						continue;
 					}
 
@@ -309,14 +306,14 @@ public abstract class ICustomCommand {
 				else if (converter.getParameterCount() == 2)
 					return converter.invoke(command, value, context);
 				else
-					throw new NexusException("Unknown converter parameters in " + converter.getName());
+					throw new ArgosException("Unknown converter parameters in " + converter.getName());
 			} else if (type.isEnum()) {
 				return convertToEnum(value, (Class<? extends Enum<?>>) type);
 			} else if (PlayerOwnedObject.class.isAssignableFrom(type)) {
 				return convertToPlayerOwnedObject(value, (Class<? extends PlayerOwnedObject>) type);
 			}
 		} catch (InvocationTargetException ex) {
-			if (Nexus.isDebug())
+			if (Argos.isDebug())
 				ex.printStackTrace();
 			if (required)
 				if (!isNullOrEmpty(value) && conversionExceptions.contains(ex.getCause().getClass()))
@@ -448,7 +445,7 @@ public abstract class ICustomCommand {
 			.filter(method -> method.getAnnotation(Disabled.class) == null)
 			.filter(method -> {
 				final Environments envs = method.getAnnotation(Environments.class);
-				return envs == null || ArrayUtils.contains(envs.value(), Nexus.getEnv());
+					return envs == null || ArrayUtils.contains(envs.value(), Argos.getEnv());
 			})
 			.filter(method -> hasPermission(event.getSender(), method))
 			.collect(Collectors.toList());

@@ -1,19 +1,21 @@
 package net.projectmythos.argos.framework.commands;
 
-import gg.projecteden.nexus.Nexus;
-import gg.projecteden.nexus.utils.StringUtils;
-import gg.projecteden.nexus.utils.Timer;
-import gg.projecteden.nexus.utils.Utils;
 import lombok.Getter;
+import net.projectmythos.argos.Argos;
 import net.projectmythos.argos.framework.commands.models.CustomCommand;
 import net.projectmythos.argos.framework.commands.models.ICustomCommand;
+import net.projectmythos.argos.framework.commands.models.annotations.ConverterFor;
+import net.projectmythos.argos.framework.commands.models.annotations.DoubleSlash;
+import net.projectmythos.argos.framework.commands.models.annotations.TabCompleterFor;
+import net.projectmythos.argos.utils.StringUtils;
+import net.projectmythos.argos.utils.Utils;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static gg.projecteden.api.common.utils.ReflectionUtils.methodsAnnotatedWith;
-import static gg.projecteden.api.common.utils.ReflectionUtils.subTypesOf;
+import static net.projectmythos.argos.utils.ReflectionUtils.methodsAnnotatedWith;
+import static net.projectmythos.argos.utils.ReflectionUtils.subTypesOf;
 
 @SuppressWarnings({"unused", "unchecked"})
 public class Commands {
@@ -69,7 +71,7 @@ public class Commands {
 	}
 
 	public void registerAll() {
-		Nexus.debug(" Registering " + commandSet.size() + " commands");
+		Argos.debug(" Registering " + commandSet.size() + " commands");
 		commandSet.forEach(this::register);
 	}
 
@@ -77,7 +79,7 @@ public class Commands {
 		for (Class<? extends CustomCommand> clazz : customCommands)
 			try {
 				if (Utils.canEnable(clazz))
-					register(Nexus.singletonOf(clazz));
+					register(Argos.singletonOf(clazz));
 			} catch (Throwable ex) {
 				plugin.getLogger().info("Error while registering command " + prettyName(clazz));
 				ex.printStackTrace();
@@ -123,7 +125,7 @@ public class Commands {
 	public void unregister(Class<? extends CustomCommand>... customCommands) {
 		for (Class<? extends CustomCommand> clazz : customCommands)
 			if (Utils.canEnable(clazz))
-				unregister(Nexus.singletonOf(clazz));
+				unregister(Argos.singletonOf(clazz));
 	}
 
 	public void unregisterExcept(Class<? extends CustomCommand>... customCommands) {

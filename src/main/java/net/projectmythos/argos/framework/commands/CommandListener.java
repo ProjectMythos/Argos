@@ -2,12 +2,12 @@ package net.projectmythos.argos.framework.commands;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import com.google.common.base.Strings;
-import gg.projecteden.api.common.utils.Nullables;
-import gg.projecteden.nexus.framework.commands.models.CustomCommand;
-import gg.projecteden.nexus.framework.commands.models.events.CommandTabEvent;
-import gg.projecteden.nexus.utils.PlayerUtils;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import net.projectmythos.argos.framework.commands.models.CustomCommand;
+import net.projectmythos.argos.framework.commands.models.events.CommandTabEvent;
+import net.projectmythos.argos.utils.Nullables;
+import net.projectmythos.argos.utils.PlayerUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static gg.projecteden.nexus.utils.StringUtils.trimFirst;
+import static net.projectmythos.argos.utils.StringUtils.trimFirst;
 
 @NoArgsConstructor
 public class CommandListener implements Listener {

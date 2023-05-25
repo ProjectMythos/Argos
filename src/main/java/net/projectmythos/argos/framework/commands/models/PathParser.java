@@ -1,19 +1,19 @@
 package net.projectmythos.argos.framework.commands.models;
 
-import gg.projecteden.api.common.exceptions.EdenException;
-import gg.projecteden.api.mongodb.interfaces.PlayerOwnedObject;
-import gg.projecteden.nexus.Nexus;
-import gg.projecteden.nexus.framework.commands.Commands;
-import gg.projecteden.nexus.framework.commands.models.annotations.Arg;
-import gg.projecteden.nexus.framework.commands.models.annotations.Path;
-import gg.projecteden.nexus.framework.commands.models.annotations.Switch;
-import gg.projecteden.nexus.framework.commands.models.annotations.TabCompleteIgnore;
-import gg.projecteden.nexus.framework.commands.models.events.CommandEvent;
-import gg.projecteden.nexus.framework.commands.models.events.CommandTabEvent;
-import gg.projecteden.nexus.framework.exceptions.NexusException;
-import gg.projecteden.nexus.utils.Utils;
 import lombok.*;
 import lombok.experimental.Accessors;
+import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.framework.commands.Commands;
+import net.projectmythos.argos.framework.commands.models.annotations.Arg;
+import net.projectmythos.argos.framework.commands.models.annotations.Path;
+import net.projectmythos.argos.framework.commands.models.annotations.Switch;
+import net.projectmythos.argos.framework.commands.models.annotations.TabCompleteIgnore;
+import net.projectmythos.argos.framework.commands.models.events.CommandEvent;
+import net.projectmythos.argos.framework.commands.models.events.CommandTabEvent;
+import net.projectmythos.argos.framework.exceptions.ArgosException;
+import net.projectmythos.argos.framework.exceptions.MythosException;
+import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
+import net.projectmythos.argos.utils.Utils;
 import org.bukkit.OfflinePlayer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static gg.projecteden.nexus.framework.commands.models.CustomCommand.getSwitchPattern;
-import static gg.projecteden.nexus.utils.Nullables.isNullOrEmpty;
-import static gg.projecteden.nexus.utils.StringUtils.COMMA_SPLIT_REGEX;
-import static gg.projecteden.nexus.utils.StringUtils.left;
 import static java.util.stream.Collectors.toList;
+import static net.projectmythos.argos.framework.commands.models.CustomCommand.getSwitchPattern;
+import static net.projectmythos.argos.utils.Nullables.isNullOrEmpty;
+import static net.projectmythos.argos.utils.StringUtils.COMMA_SPLIT_REGEX;
+import static net.projectmythos.argos.utils.StringUtils.left;
 
 @Data
 class PathParser {
@@ -94,8 +94,8 @@ class PathParser {
 							try {
 								arg.setContextArg(command.getMethodParameters(method, event, false)[annotation.context() - 1]);
 							} catch (Exception ex) {
-								if (Nexus.isDebug())
-									if (!(ex instanceof InvocationTargetException && ex.getCause() instanceof EdenException))
+								if (Argos.isDebug())
+									if (!(ex instanceof InvocationTargetException && ex.getCause() instanceof MythosException))
 										ex.printStackTrace();
 							}
 					}
@@ -291,7 +291,7 @@ class PathParser {
 				} else if (tabCompleter.getParameterCount() == 2)
 					results.addAll((List<String>) tabCompleter.invoke(tabCompleteCommand, realArg.toLowerCase(), contextArg));
 				else
-					throw new NexusException("Unknown converter parameters in " + tabCompleter.getName());
+					throw new ArgosException("Unknown converter parameters in " + tabCompleter.getName());
 			} else if (type != null && type.isEnum())
 				results.addAll(command.tabCompleteEnum(realArg.toLowerCase(), (Class<? extends Enum<?>>) type));
 

@@ -9,6 +9,7 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.projectmythos.argos.framework.commands.models.annotations.*;
 import net.projectmythos.argos.framework.commands.models.events.CommandEvent;
 import net.projectmythos.argos.framework.commands.models.events.CommandRunEvent;
 import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
@@ -16,9 +17,14 @@ import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotFoun
 import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
 import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeCommandBlockException;
 import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeConsoleException;
+import net.projectmythos.argos.utils.SerializationUtils.Json;
+import net.projectmythos.argos.utils.TimeUtils.Timespan;
+import net.projectmythos.argos.models.nickname.Nickname;
+import net.projectmythos.argos.utils.PlayerUtils.OnlinePlayers;
 import net.projectmythos.argos.framework.exceptions.preconfigured.MustBeIngameException;
 import net.projectmythos.argos.framework.exceptions.preconfigured.NoPermissionException;
 import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
+import net.projectmythos.argos.framework.persistence.mongodb.MongoPlayerService;
 import net.projectmythos.argos.utils.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -50,6 +56,11 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static net.projectmythos.argos.utils.Nullables.isNullOrAir;
+import static net.projectmythos.argos.utils.Nullables.isNullOrEmpty;
+import static net.projectmythos.argos.utils.StringUtils.an;
+import static net.projectmythos.argos.utils.StringUtils.trimFirst;
+import static net.projectmythos.argos.utils.TimeUtils.parseDate;
+import static net.projectmythos.argos.utils.TimeUtils.parseDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -586,7 +597,7 @@ public abstract class CustomCommand extends ICustomCommand {
 			return String.join(" ", event.getArgs().subList(i - 1, event.getArgs().size()));
 
 		String result = event.getArgs().get(i - 1);
-		if (Nullables.isNullOrEmpty(result)) return null;
+		if (isNullOrEmpty(result)) return null;
 		return result;
 	}
 
@@ -837,51 +848,53 @@ public abstract class CustomCommand extends ICustomCommand {
 				.collect(toList());
 	}
 
-	@ConverterFor(ItemStack.class)
-	ItemStack convertToItemStack(String value) {
-		List<Supplier<ItemStack>> converters = List.of(
-			() -> CustomBlock.valueofObtainable(value.toUpperCase()).get().getItemStack(),
-			() -> DecorationConfig.of(value).getItem(),
-			() -> new ItemBuilder(CustomMaterial.valueOf(value.toUpperCase())).build(),
-			() -> new ItemStack(convertToMaterial(value))
-		);
+	// TODO: uncomment if doing custom blocks
 
-		for (Supplier<ItemStack> converter : converters) {
-			try {
-				return converter.get();
-			} catch (InvalidInputException | IllegalArgumentException | NullPointerException ignore) {}
-		}
+//	@ConverterFor(ItemStack.class)
+//	ItemStack convertToItemStack(String value) {
+//		List<Supplier<ItemStack>> converters = List.of(
+//			() -> CustomBlock.valueofObtainable(value.toUpperCase()).get().getItemStack(),
+//			() -> DecorationConfig.of(value).getItem(),
+//			() -> new ItemBuilder(CustomMaterial.valueOf(value.toUpperCase())).build(),
+//			() -> new ItemStack(convertToMaterial(value))
+//		);
+//
+//		for (Supplier<ItemStack> converter : converters) {
+//			try {
+//				return converter.get();
+//			} catch (InvalidInputException | IllegalArgumentException | NullPointerException ignore) {}
+//		}
+//
+//		throw new InvalidInputException("Item from " + value + " not found");
+//	}
 
-		throw new InvalidInputException("Item from " + value + " not found");
-	}
-
-	@TabCompleterFor(ItemStack.class)
-	List<String> tabCompleteItemStack(String filter) {
-		return new ArrayList<>() {{
-			addAll(tabCompleteMaterial(filter));
-
-			addAll(Arrays.stream(CustomMaterial.class.getEnumConstants())
-				.filter(customMaterial -> DecorationConfig.of(customMaterial) == null)
-				.map(defaultTabCompleteEnumFormatter())
-				.filter(value -> value.toLowerCase().startsWith(filter.toLowerCase()))
-				.toList());
-
-			if (isStaff()) // TODO Custom Blocks
-				addAll(tabCompleteCustomBlock(filter));
-
-			if (isStaff()) { // TODO Decorations - Remove on release
-				addAll(Arrays.stream(DecorationType.values())
-					.map(type -> type.name().toLowerCase())
-					.filter(name -> name.toLowerCase().startsWith(filter.toLowerCase()))
-					.toList());
-
-//				addAll(DecorationConfig.getAllDecorationTypes().stream()
-//					.map(DecorationConfig::getId)
-//					.filter(id -> id.toLowerCase().startsWith(filter.toLowerCase()))
+//	@TabCompleterFor(ItemStack.class)
+//	List<String> tabCompleteItemStack(String filter) {
+//		return new ArrayList<>() {{
+//			addAll(tabCompleteMaterial(filter));
+//
+//			addAll(Arrays.stream(CustomMaterial.class.getEnumConstants())
+//				.filter(customMaterial -> DecorationConfig.of(customMaterial) == null)
+//				.map(defaultTabCompleteEnumFormatter())
+//				.filter(value -> value.toLowerCase().startsWith(filter.toLowerCase()))
+//				.toList());
+//
+//			if (isStaff()) // TODO Custom Blocks
+//				addAll(tabCompleteCustomBlock(filter));
+//
+//			if (isStaff()) { // TODO Decorations - Remove on release
+//				addAll(Arrays.stream(DecorationType.values())
+//					.map(type -> type.name().toLowerCase())
+//					.filter(name -> name.toLowerCase().startsWith(filter.toLowerCase()))
 //					.toList());
-			}
-		}};
-	}
+//
+////				addAll(DecorationConfig.getAllDecorationTypes().stream()
+////					.map(DecorationConfig::getId)
+////					.filter(id -> id.toLowerCase().startsWith(filter.toLowerCase()))
+////					.toList());
+//			}
+//		}};
+//	}
 
 	@ConverterFor(Material.class)
 	Material convertToMaterial(String value) {
@@ -911,16 +924,18 @@ public abstract class CustomCommand extends ICustomCommand {
 		return results;
 	}
 
-	@TabCompleterFor(CustomBlock.class)
-	List<String> tabCompleteCustomBlock(String value) {
-		List<String> results = tabCompleteEnum(value, CustomBlock.class);
-		for (CustomBlock customBlock : CustomBlock.values()) {
-			if (!customBlock.isObtainable())
-				results.remove(customBlock.name().toLowerCase());
-		}
+	// TODO: uncomment if doing custom blocks
 
-		return results;
-	}
+//	@TabCompleterFor(CustomBlock.class)
+//	List<String> tabCompleteCustomBlock(String value) {
+//		List<String> results = tabCompleteEnum(value, CustomBlock.class);
+//		for (CustomBlock customBlock : CustomBlock.values()) {
+//			if (!customBlock.isObtainable())
+//				results.remove(customBlock.name().toLowerCase());
+//		}
+//
+//		return results;
+//	}
 
 	@ConverterFor(ChatColor.class)
 	ChatColor convertToChatColor(String value) {
