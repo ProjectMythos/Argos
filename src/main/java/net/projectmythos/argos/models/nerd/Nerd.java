@@ -3,26 +3,23 @@ package net.projectmythos.argos.models.nerd;
 import com.mongodb.DBObject;
 import dev.morphia.annotations.*;
 import dev.morphia.converters.UUIDConverter;
-import gg.projecteden.api.interfaces.HasUniqueId;
 import lombok.*;
 import net.md_5.bungee.api.ChatColor;
-import net.projectmythos.argos.features.afk.AFK;
 import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
 import net.projectmythos.argos.framework.interfaces.Colored;
 import net.projectmythos.argos.framework.interfaces.IsColoredAndNicknamed;
 import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
 import net.projectmythos.argos.framework.persistence.serializers.mongodb.LocalDateConverter;
 import net.projectmythos.argos.framework.persistence.serializers.mongodb.LocalDateTimeConverter;
-import net.projectmythos.argos.models.afk.AFKUser.AFKSetting;
 import net.projectmythos.argos.utils.*;
-import org.bukkit.GameMode;
+import net.projectmythos.argos.utils.worldgroup.SubWorldGroup;
+import net.projectmythos.argos.utils.worldgroup.WorldGroup;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -255,7 +252,7 @@ public class Nerd implements PlayerOwnedObject, IsColoredAndNicknamed, Colored {
 	public boolean isVanished() {
 		if (!isOnline())
 			return false;
-		return Vanish.isVanished(getOnlinePlayer());
+		return PlayerUtils.isVanished(getOnlinePlayer());
 	}
 
 	public @NotNull WorldGroup getWorldGroup() {
@@ -325,32 +322,6 @@ public class Nerd implements PlayerOwnedObject, IsColoredAndNicknamed, Colored {
 	public static class StaffMember implements PlayerOwnedObject {
 		@NonNull
 		private UUID uuid;
-	}
-
-	public void updateSetAffectsSpawning() {
-		if (!isOnline())
-			return;
-
-		final Player player = getOnlinePlayer();
-		if (isAfk() && !AFK.get(player).getSetting(AFKSetting.MOB_SPAWNING))
-			player.setAffectsSpawning(false);
-		else
-			player.setAffectsSpawning(true);
-	}
-
-	public void updateSetBypassInsomnia() {
-		if (!isOnline())
-			return;
-
-		final Player player = getOnlinePlayer();
-
-		boolean bypass = isAfk()
-				|| isVanished()
-				|| !getWorldGroup().isSurvivalMode()
-				|| Godmode.of(player).isEnabled()
-				|| player.getGameMode() != GameMode.SURVIVAL;
-
-		player.setBypassInsomnia(bypass);
 	}
 
 	public enum Pronoun {

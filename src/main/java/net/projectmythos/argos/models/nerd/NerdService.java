@@ -4,6 +4,7 @@ import dev.morphia.query.Query;
 import net.projectmythos.argos.framework.annotations.ObjectClass;
 import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoPlayerService;
+import net.projectmythos.argos.models.hours.HoursService;
 import net.projectmythos.argos.utils.Utils;
 import org.jetbrains.annotations.Nullable;
 
