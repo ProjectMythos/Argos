@@ -17,6 +17,8 @@ import net.projectmythos.argos.features.menus.api.TemporaryMenuListener;
 import net.projectmythos.argos.framework.commands.Commands;
 import net.projectmythos.argos.framework.features.Features;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoService;
+import net.projectmythos.argos.models.nerd.Nerd;
+import net.projectmythos.argos.models.nerd.Rank;
 import net.projectmythos.argos.utils.*;
 import net.projectmythos.argos.utils.WorldGuardFlagUtils.CustomFlags;
 import org.bukkit.Bukkit;
