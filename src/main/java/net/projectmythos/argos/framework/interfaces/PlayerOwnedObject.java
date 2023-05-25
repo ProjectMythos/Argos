@@ -1,19 +1,27 @@
 package net.projectmythos.argos.framework.interfaces;
 
 import gg.projecteden.api.interfaces.HasUniqueId;
+import gg.projecteden.api.interfaces.Nicknamed;
 import gg.projecteden.parchment.HasLocation;
 import gg.projecteden.parchment.OptionalLocation;
 import gg.projecteden.parchment.OptionalPlayerLike;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.ComponentLike;
 import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.features.afk.AFK;
 import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotOnlineException;
-import net.projectmythos.argos.utils.AdventureUtils;
-import net.projectmythos.argos.utils.JsonBuilder;
-import net.projectmythos.argos.utils.Nullables;
-import net.projectmythos.argos.utils.Tasks;
+import net.projectmythos.argos.models.nerd.Nerd;
+import net.projectmythos.argos.models.nerd.Rank;
+import net.projectmythos.argos.models.nickname.Nickname;
+import net.projectmythos.argos.models.nickname.NicknameService;
+import net.projectmythos.argos.utils.*;
+import net.projectmythos.argos.utils.worldgroup.WorldGroup;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -22,26 +30,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
+import static net.projectmythos.argos.utils.Nullables.isNullOrEmpty;
 import static net.projectmythos.argos.utils.UUIDUtils.isUUID0;
 
 /**
  * A mongo database object owned by a player
  */
-public interface PlayerOwnedObject extends OptionalPlayerLike {
+public interface PlayerOwnedObject extends Identified, ForwardingAudience.Single, DatabaseObject, Nicknamed {
 
 	@NotNull UUID getUuid();
 
-	/**
+	/*
 	 * Gets the unique ID of this object. Alias for {@link #getUuid()}, for compatibility with {@link HasUniqueId}.
+	 *
 	 * @return this object's unique ID
 	 */
-	@Override
+
 	@NotNull
 	default UUID getUniqueId() {
 		return getUuid();
 	}
 
-	/**
+	/*
+	 * Gets the unique ID of this object. Alias for {@link #getUuid()}, for compatibility with {@link HasUniqueId}.
+	 * @return this object's unique ID
+	 */
+
+	/*
 	 * Gets the offline player for this object.
 	 * <p>
 	 * <b>WARNING:</b> This method involves I/O operations to fetch user data which can be costly,
@@ -86,14 +101,14 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 		return isUUID0(getUuid());
 	}
 
-	default boolean isAfk() {
-		return AFK.get(getOnlinePlayer()).isAfk();
-	}
-
-	default boolean isTimeAfk() {
-		return AFK.get(getOnlinePlayer()).isTimeAfk();
-	}
-
+	//	default boolean isAfk() {
+//		return AFK.get(getOnlinePlayer()).isAfk();
+//	}
+//
+//	default boolean isTimeAfk() {
+//		return AFK.get(getOnlinePlayer()).isTimeAfk();
+//	}
+//
 	default @NotNull Nerd getNerd() {
 		return Nerd.of(this);
 	}
@@ -110,15 +125,10 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 		return getOnlineNerd().getWorldGroup();
 	}
 
-	default Distance distanceTo(HasLocation location) {
-		return distance(getOnlinePlayer(), location);
+	default Distance distanceTo(Location location) {
+		return distance(getOnlinePlayer().getLocation(), location);
 	}
 
-	default Distance distanceTo(OptionalLocation location) {
-		return distance(getOnlinePlayer(), location);
-	}
-
-	@Override
 	default @NotNull String getName() {
 		String name = Name.of(this);
 		if (name == null)
@@ -126,25 +136,16 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 		return name;
 	}
 
-	@Override
 	default @NotNull String getNickname() {
-		return Nickname.of(this);
+		return Nickname.of(getUuid());
 	}
 
 	default Nickname getNicknameData() {
-		return new NicknameService().get(this.getUuid());
+		return new NicknameService().get(getUuid());
 	}
 
 	default boolean hasNickname() {
-		return !Nullables.isNullOrEmpty(getNicknameData().getNicknameRaw());
-	}
-
-	default Presence presence() {
-		return Presence.of(this.getOnlinePlayer());
-	}
-
-	default String presenceEmoji() {
-		return presence().getCharacter();
+		return !isNullOrEmpty(getNicknameData().getNicknameRaw());
 	}
 
 	default void debug(String message) {
@@ -157,6 +158,10 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 			sendMessage(message);
 	}
 
+	default String toPrettyString() {
+		return StringUtils.toPrettyString(this);
+	}
+
 	default void sendMessage(String message) {
 		if (isUUID0(getUuid()))
 			Argos.log(message);
@@ -164,11 +169,9 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 			sendMessage(json(message));
 	}
 
-	//TODO: Uncomment if doing mail
-
 //	default void sendOrMail(String message) {
 //		if (isUUID0(getUuid())) {
-//			Argos.log(message);
+//			Athena.log(message);
 //			return;
 //		}
 //
@@ -183,7 +186,7 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 			Argos.log(AdventureUtils.asPlainText(component));
 		else
 			// TODO - 1.19.2 Chat Validation Kick
-			// sendMessage(identityOf(sender), component, type);
+//			 sendMessage(identityOf(sender), component, type);
 			sendMessage(component, type);
 	}
 
@@ -217,9 +220,14 @@ public interface PlayerOwnedObject extends OptionalPlayerLike {
 		return new JsonBuilder(message);
 	}
 
-	@Override
 	default @NotNull Identity identity() {
 		return Identity.identity(getUuid());
 	}
 
+	@Override
+	default @NotNull Audience audience() {
+		return Objects.requireNonNullElse(getPlayer(), Audience.empty());
+	}
+
 }
+

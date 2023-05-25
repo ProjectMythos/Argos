@@ -2,6 +2,7 @@ package net.projectmythos.argos.features.afk;
 
 import gg.projecteden.api.interfaces.HasUniqueId;
 import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.framework.features.Feature;
 import net.projectmythos.argos.models.afk.AFKUser;
 import net.projectmythos.argos.models.afk.AFKUserService;
 import net.projectmythos.argos.utils.StringUtils;
