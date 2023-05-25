@@ -2,7 +2,9 @@ package net.projectmythos.argos.framework.persistence.mongodb;
 
 import net.projectmythos.argos.framework.exceptions.postconfigured.PlayerNotFoundException;
 import net.projectmythos.argos.framework.interfaces.PlayerOwnedObject;
-import net.projectmythos.argos.utils.PlayerUtils;
+import net.projectmythos.argos.models.nerd.Nerd;
+import net.projectmythos.argos.models.nerd.NerdService;
+import net.projectmythos.argos.utils.PlayerUtils.OnlinePlayers;
 import net.projectmythos.argos.utils.UUIDUtils;
 import org.bukkit.entity.Player;
 
@@ -19,7 +21,7 @@ public abstract class MongoPlayerService<T extends PlayerOwnedObject> extends Mo
 
     public List<T> getOnline() {
         List<T> online = new ArrayList<>();
-        for (Player player : PlayerUtils.OnlinePlayers.getAll())
+        for (Player player : OnlinePlayers.getAll())
             online.add(get(player));
         return online;
     }
