@@ -2,10 +2,14 @@ package net.projectmythos.argos;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
+import it.sauronsoftware.cron4j.Scheduler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
+import net.luckperms.api.LuckPerms;
 import net.md_5.bungee.api.ChatColor;
 import net.projectmythos.argos.features.listeners.common.TemporaryListener;
 import net.projectmythos.argos.features.menus.api.SignMenuFactory;
@@ -14,12 +18,14 @@ import net.projectmythos.argos.framework.commands.Commands;
 import net.projectmythos.argos.framework.features.Features;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoService;
 import net.projectmythos.argos.utils.*;
+import net.projectmythos.argos.utils.WorldGuardFlagUtils.CustomFlags;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.objenesis.ObjenesisStd;
 
@@ -222,7 +228,7 @@ public class Argos extends JavaPlugin {
                 () -> { if (features != null) features.unregisterExcept(Discord.class, Chat.class); },
                 () -> { if (features != null) features.unregister(Discord.class, Chat.class); },
                 () -> { Bukkit.getServicesManager().unregisterAll(this); },
-                () -> { MySQLPersistence.shutdown(); },
+//                () -> { MySQLPersistence.shutdown(); },
                 () -> { LuckPermsUtils.shutdown(); },
                 () -> { shutdownDatabases(); },
                 () -> { if (api != null) api.shutdown(); }
