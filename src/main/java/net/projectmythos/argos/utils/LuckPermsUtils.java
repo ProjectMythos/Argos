@@ -184,7 +184,7 @@ public class LuckPermsUtils {
 		CompletableFuture<List<UUID>> future = new CompletableFuture<>();
 
 		search.thenAccept(map -> future.complete(map.keySet().stream()
-			.filter(Dev.KODA::isNot)
+//			.filter(Dev.KODA::isNot)
 			.toList()));
 
 		return future;

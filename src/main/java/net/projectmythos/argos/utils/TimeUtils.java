@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import net.projectmythos.argos.framework.exceptions.ArgosException;
 import net.projectmythos.argos.framework.exceptions.MythosException;
 
 import java.text.DecimalFormat;
@@ -372,7 +371,7 @@ public class TimeUtils {
 
     private interface TimeEnum {
 
-        long get();
+        TickTime get();
 
         default long x(int multiplier) {
             return get() * multiplier;
@@ -411,7 +410,7 @@ public class TimeUtils {
 
         private final long value;
 
-        public long get() {
+        public TickTime get() {
             return value;
         }
 
@@ -430,7 +429,7 @@ public class TimeUtils {
 
         private final long value;
 
-        public long get() {
+        public TickTime get() {
             return value;
         }
 
