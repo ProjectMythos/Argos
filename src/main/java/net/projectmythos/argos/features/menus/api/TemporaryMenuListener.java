@@ -2,6 +2,7 @@ package net.projectmythos.argos.features.menus.api;
 
 import lombok.Data;
 import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.features.listeners.common.TemporaryListener;
 import net.projectmythos.argos.features.menus.api.annotations.Title;
 import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
 import net.projectmythos.argos.utils.Nullables;

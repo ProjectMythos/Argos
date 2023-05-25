@@ -7,8 +7,11 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import net.md_5.bungee.api.ChatColor;
+import net.projectmythos.argos.features.listeners.common.TemporaryListener;
 import net.projectmythos.argos.features.menus.api.SignMenuFactory;
+import net.projectmythos.argos.features.menus.api.TemporaryMenuListener;
 import net.projectmythos.argos.framework.commands.Commands;
+import net.projectmythos.argos.framework.features.Features;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoService;
 import net.projectmythos.argos.utils.*;
 import org.bukkit.Bukkit;
@@ -140,12 +143,12 @@ public class Argos extends JavaPlugin {
     @Getter
     private static final List<Class<? extends Event>> eventHandlers = new ArrayList<>();
 
-    public static void registerTemporaryListener(TemporaryListener listener) {
+    public static void registerTemporaryListener(TemporaryMenuListener listener) {
         registerListener(listener);
         temporaryListeners.add(listener);
     }
 
-    public static void unregisterTemporaryListener(TemporaryListener listener) {
+    public static void unregisterTemporaryListener(TemporaryMenuListener listener) {
         listener.unregister();
         unregisterListener(listener);
         temporaryListeners.remove(listener);
@@ -195,12 +198,12 @@ public class Argos extends JavaPlugin {
             new Timer(" Hooks", this::hooks);
             new Timer(" Databases", this::databases);
             new Timer(" Features", () -> {
-                features = new Features(this, "gg.projecteden.nexus.features");
+                features = new Features(this, "net.projectmythos.argos.features");
                 features.register(Chat.class, Discord.class); // prioritize
                 features.registerAll();
             });
             new Timer(" Commands", () -> {
-                commands = new Commands(this, "gg.projecteden.nexus.features");
+                commands = new Commands(this, "net.projectmythos.argos.features");
                 commands.registerAll();
             });
         });

@@ -22,9 +22,15 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.projectmythos.argos.features.menus.api.InventoryManager;
-import net.projectmythos.argos.features.menus.api.SmartInventory;
-import net.projectmythos.argos.features.menus.api.SmartInvsPlugin;
+import net.projectmythos.argos.Argos;
+import net.projectmythos.argos.features.menus.api.*;
+import net.projectmythos.argos.features.menus.api.annotations.Rows;
+import net.projectmythos.argos.features.menus.api.annotations.Title;
+import net.projectmythos.argos.features.menus.api.annotations.Uncloseable;
+import net.projectmythos.argos.framework.exceptions.postconfigured.InvalidInputException;
+import net.projectmythos.argos.features.menus.api.SmartInventory.Builder;
+import net.projectmythos.argos.utils.*;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import net.projectmythos.argos.features.menus.api.TemporaryMenuListener.CustomInventoryHolder;
@@ -39,6 +45,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static net.projectmythos.argos.features.menus.api.SignMenuFactory.ARROWS;
 
 public abstract class InventoryProvider {
 	@Getter
@@ -115,7 +123,7 @@ public abstract class InventoryProvider {
 
 	public void onPageTurn(Player viewer) {}
 
-	public Builder getInventory(int page) {
+	public SmartInventory.Builder getInventory(int page) {
 		Builder inv = SmartInventory.builder()
 			.provider(this)
 			.rows(getRows(null))
@@ -224,12 +232,22 @@ public abstract class InventoryProvider {
 		addBackItemBottomInventory(previousMenu);
 	}
 
+	// TODO: uncomment when doing custom materials
+
+//	protected ItemStack backItem() {
+//		return new ItemBuilder(CustomMaterial.GUI_ARROW_PREVIOUS).dyeColor(ColorType.RED).itemFlags(ItemFlag.HIDE_DYE).name("&cBack").build();
+//	}
+//
+//	protected ItemStack closeItem() {
+//		return new ItemBuilder(CustomMaterial.GUI_CLOSE).dyeColor(ColorType.RED).itemFlags(ItemFlag.HIDE_DYE).name("&cClose").build();
+//	}
+
 	protected ItemStack backItem() {
-		return new ItemBuilder(CustomMaterial.GUI_ARROW_PREVIOUS).dyeColor(ColorType.RED).itemFlags(ItemFlag.HIDE_DYE).name("&cBack").build();
+		return new ItemBuilder(Material.ARROW).name("&cBack").build();
 	}
 
 	protected ItemStack closeItem() {
-		return new ItemBuilder(CustomMaterial.GUI_CLOSE).dyeColor(ColorType.RED).itemFlags(ItemFlag.HIDE_DYE).name("&cClose").build();
+		return new ItemBuilder(Material.ARROW).name("&cClose").build();
 	}
 
 	protected void warp(String warp) {
@@ -322,8 +340,11 @@ public abstract class InventoryProvider {
 		}
 
 		public void build() {
-			if (hasResourcePack == null)
-				this.hasResourcePack = ResourcePack.isEnabledFor(viewer);
+
+			// TODO: uncomment when doing custom resource pack
+
+//			if (hasResourcePack == null)
+//				this.hasResourcePack = ResourcePack.isEnabledFor(viewer);
 
 			if (previousSlot == null)
 				previousSlot = SlotPos.of(contents.config().getRows() - 1, 0);
@@ -344,18 +365,20 @@ public abstract class InventoryProvider {
 
 			String[] lore = {"&f", "&7Right click to jump to a page"};
 
-			ItemBuilder previous = ResourcePackNumber.of(previousPage, ColorType.CYAN).get()
-				.name("&fPrevious Page")
-				.lore(lore);
+			// TODO: uncomment when doing custom resource pack
 
-			ItemBuilder next = ResourcePackNumber.of(nextPage, ColorType.CYAN).get()
-				.name("&fNext Page")
-				.lore(lore);
-
-			if (guiArrows) {
-				previous.material(CustomMaterial.GUI_ARROW_PREVIOUS).dyeColor(ColorType.CYAN).itemFlags(ItemFlag.HIDE_DYE);
-				next.material(CustomMaterial.GUI_ARROW_NEXT).dyeColor(ColorType.CYAN).itemFlags(ItemFlag.HIDE_DYE);
-			}
+//			ItemBuilder previous = ResourcePackNumber.of(previousPage, ColorType.CYAN).get()
+//				.name("&fPrevious Page")
+//				.lore(lore);
+//
+//			ItemBuilder next = ResourcePackNumber.of(nextPage, ColorType.CYAN).get()
+//				.name("&fNext Page")
+//				.lore(lore);
+//
+//			if (guiArrows) {
+//				previous.material(CustomMaterial.GUI_ARROW_PREVIOUS).dyeColor(ColorType.CYAN).itemFlags(ItemFlag.HIDE_DYE);
+//				next.material(CustomMaterial.GUI_ARROW_NEXT).dyeColor(ColorType.CYAN).itemFlags(ItemFlag.HIDE_DYE);
+//			}
 
 			page.setItemsPerPage(perPage);
 			page.setItems(items.toArray(ClickableItem[]::new));
@@ -364,43 +387,47 @@ public abstract class InventoryProvider {
 			if (page.getPage() > items.size() / perPage)
 				page.page(items.size() / perPage);
 
-			if (!page.isFirst())
-				contents.set(previousSlot, ClickableItem.of(previous.build(), e -> {
-					if (e.isRightClick())
-						jumpToPage(page.getPage());
-					else {
-						onPageTurn(viewer);
-						open(viewer, page.previous().getPage());
-					}
-				}));
+			// TODO: uncomment when doing custom resource pack
 
-			if (!page.isLast())
-				contents.set(nextSlot, ClickableItem.of(next.build(), e -> {
-					if (e.isRightClick())
-						jumpToPage(page.getPage());
-					else {
-						onPageTurn(viewer);
-						open(viewer, page.next().getPage());
-					}
-				}));
+//			if (!page.isFirst())
+//				contents.set(previousSlot, ClickableItem.of(previous.build(), e -> {
+//					if (e.isRightClick())
+//						jumpToPage(page.getPage());
+//					else {
+//						onPageTurn(viewer);
+//						open(viewer, page.previous().getPage());
+//					}
+//				}));
+//
+//			if (!page.isLast())
+//				contents.set(nextSlot, ClickableItem.of(next.build(), e -> {
+//					if (e.isRightClick())
+//						jumpToPage(page.getPage());
+//					else {
+//						onPageTurn(viewer);
+//						open(viewer, page.next().getPage());
+//					}
+//				}));
 		}
 
-		private void jumpToPage(int currentPage) {
-			Nexus.getSignMenuFactory()
-				.lines("", ARROWS, "Enter a", "page number")
-				.prefix(Shops.PREFIX)
-				.onError(() -> open(viewer, currentPage))
-				.response(lines -> {
-					if (lines[0].length() > 0) {
-						String input = lines[0].replaceAll("[^\\d.-]+", "");
-						if (!Utils.isInt(input))
-							throw new InvalidInputException("Could not parse &e" + lines[0] + " &cas a page number");
-						int pageNumber = Math.max(0, Integer.parseInt(input) - 1);
-						open(viewer, pageNumber);
-					} else
-						open(viewer, currentPage);
-				}).open(viewer);
-		}
+		// TODO: uncomment when doing shops
+
+//		private void jumpToPage(int currentPage) {
+//			Argos.getSignMenuFactory()
+//				.lines("", ARROWS, "Enter a", "page number")
+//				.prefix(Shops.PREFIX)
+//				.onError(() -> open(viewer, currentPage))
+//				.response(lines -> {
+//					if (lines[0].length() > 0) {
+//						String input = lines[0].replaceAll("[^\\d.-]+", "");
+//						if (!Utils.isInt(input))
+//							throw new InvalidInputException("Could not parse &e" + lines[0] + " &cas a page number");
+//						int pageNumber = Math.max(0, Integer.parseInt(input) - 1);
+//						open(viewer, pageNumber);
+//					} else
+//						open(viewer, currentPage);
+//				}).open(viewer);
+//		}
 	}
 
 }
