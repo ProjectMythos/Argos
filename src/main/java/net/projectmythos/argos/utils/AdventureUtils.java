@@ -15,6 +15,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.md_5.bungee.api.ChatColor;
+import net.projectmythos.argos.framework.interfaces.IsColoredAndNamed;
+import net.projectmythos.argos.framework.interfaces.IsColoredAndNicknamed;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

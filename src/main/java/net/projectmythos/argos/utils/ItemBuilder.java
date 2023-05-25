@@ -820,40 +820,40 @@ public class ItemBuilder implements Cloneable, Supplier<ItemStack> {
 
 	//TODO: uncomment if doing custom models
 
-	public ItemBuilder modelId(int id) {
+//	public ItemBuilder modelId(int id) {
 //		if (id > 0)
 //			nbt(item -> item.setInteger(CustomModel.NBT_KEY, id));
-		return this;
-	}
+//		return this;
+//	}
 
-	public int modelId() {
-		NBTItem nbtItem = nbtItem();
-		final Integer modelId = nbtItem.getInteger(CustomModel.NBT_KEY);
-		return modelId == null ? 0 : modelId;
-	}
+//	public int modelId() {
+//		NBTItem nbtItem = nbtItem();
+//		final Integer modelId = nbtItem.getInteger(CustomModel.NBT_KEY);
+//		return modelId == null ? 0 : modelId;
+//	}
 
-	public static class ModelId {
+//	public static class ModelId {
+//
+//		public static int of(ItemStack item) {
+//			if (isNullOrAir(item))
+//				return 0;
+//
+//			return of(new ItemBuilder(item));
+//		}
 
-		public static int of(ItemStack item) {
-			if (isNullOrAir(item))
-				return 0;
+//		public static int of(ItemBuilder item) {
+//			return item.modelId();
+//		}
 
-			return of(new ItemBuilder(item));
-		}
-
-		public static int of(ItemBuilder item) {
-			return item.modelId();
-		}
-
-		public static boolean hasModelId(ItemStack item) {
-			return of(item) != 0;
-		}
-
-		public static boolean hasModelId(ItemBuilder item) {
-			return of(item) != 0;
-		}
-
-	}
+//		public static boolean hasModelId(ItemStack item) {
+//			return of(item) != 0;
+//		}
+//
+//		public static boolean hasModelId(ItemBuilder item) {
+//			return of(item) != 0;
+//		}
+//
+//	}
 
 	// Building //
 
