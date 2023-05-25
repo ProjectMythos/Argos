@@ -1,10 +1,13 @@
 package net.projectmythos.argos;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import net.md_5.bungee.api.ChatColor;
+import net.projectmythos.argos.features.menus.api.SignMenuFactory;
 import net.projectmythos.argos.framework.commands.Commands;
 import net.projectmythos.argos.framework.persistence.mongodb.MongoService;
 import net.projectmythos.argos.utils.*;
@@ -14,8 +17,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,7 +42,7 @@ public class Argos extends JavaPlugin {
     @Getter
     private final static HeadDatabaseAPI headAPI = new HeadDatabaseAPI();
     private static API api;
-    public static final String DOMAIN = "projectmythos.net";
+    public static final String DOMAIN = "asphodelrpg.apexmc.co";
 
     public static Map<Class<?>, Object> singletons = new ConcurrentHashMap<>();
 
@@ -62,19 +65,19 @@ public class Argos extends JavaPlugin {
         Locale.setDefault(Locale.US);
     }
 
-    public Nexus() {
+    public Argos() {
         if (instance == null) {
             instance = this;
             thread = Thread.currentThread();
         } else
-            Bukkit.getServer().getLogger().info("Nexus could not be initialized: Instance is not null, but is: " + instance.getClass().getName());
+            Bukkit.getServer().getLogger().info("Argos could not be initialized: Instance is not null, but is: " + instance.getClass().getName());
 
         api = new API();
     }
 
     public static Argos getInstance() {
         if (instance == null)
-            Bukkit.getServer().getLogger().info("Nexus could not be initialized");
+            Bukkit.getServer().getLogger().info("Argos could not be initialized");
         return instance;
     }
 
